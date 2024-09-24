@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import NewsItem from './NewsItem'
+import PropTypes from 'prop-types'
+
 
 
 const descriptionshortner = (description)=>{
@@ -14,6 +16,14 @@ const descriptionshortner = (description)=>{
     return new_des;
 }
 export default class News extends Component {
+  static defaultProps={
+    country:'in',
+    category: 'general'
+  }
+  static propTypes={
+    country: PropTypes.string,
+    category: PropTypes.string
+  }
   constructor() {
     super();
     this.state={
@@ -21,10 +31,10 @@ export default class News extends Component {
     loading: false,
     page:1,
     pageSize:21,
-  };
+    };
   }
   async componentDidMount() {
-    let url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=570c9f9c431c42fa8aa7433d8d230be7&page=1&pageSize=21";
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=570c9f9c431c42fa8aa7433d8d230be7&page=1&pageSize=5`;
     let data = await fetch(url);
     let parsedata = await data.json();
     console.log(parsedata);
@@ -32,7 +42,7 @@ export default class News extends Component {
   }
 
   handleprevclick =async()=>{
-    let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=570c9f9c431c42fa8aa7433d8d230be7&page=${this.state.page-1}&pageSize=21`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=570c9f9c431c42fa8aa7433d8d230be7&page=${this.state.page-1}&pageSize=5`;
     let data = await fetch(url);
     let parsedata = await data.json();
     console.log(parsedata);
@@ -47,7 +57,7 @@ export default class News extends Component {
     }
     else{
     
-    let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=570c9f9c431c42fa8aa7433d8d230be7&page=${this.state.page+1}&pageSize=21`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=570c9f9c431c42fa8aa7433d8d230be7&page=${this.state.page+1}&pageSize=5`;
     let data = await fetch(url);
     let parsedata = await data.json();
     console.log(parsedata);
@@ -62,7 +72,9 @@ export default class News extends Component {
     return (
       <div> 
           <div className="container my-3">
-            <h2>CrowNews- Top Headlines</h2>
+            <h2 className="text-center">
+              CrowNews- Top Headlines
+            </h2>
               <div className="row">
               {this.state.article.map((element)=>{
                 return <div className="col-md-4" key={element.url}>
@@ -71,7 +83,7 @@ export default class News extends Component {
               })}
               <div className="container d-flex justify-content-between">
               <button disabled={this.state.page<=1} type="button" className="btn btn-dark" onClick={this.handleprevclick}>&larr;Previous</button>
-              <button type="button" className="btn btn-dark"onClick={this.handlenextclick}>Next&rarr;</button>
+              <button disabled = {this.state.page + 1 > Math.ceil(this.state.totalResults/21)} type="button" className="btn btn-dark"onClick={this.handlenextclick}>Next&rarr;</button>
               </div>
               </div>                               
           </div>
